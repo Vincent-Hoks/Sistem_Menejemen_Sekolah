@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Kelas extends Model
 {
     protected $table = 'm_tingkat_kelas';
-    protected $primaryKey = 'id_kelas';
+    protected $primaryKey = 'id_tingkat_kelas';
 
     public function siswa()
     {
-        return $this->hasMany(Siswa::class, 'id_kelas');
+        return $this->hasMany(Siswa::class, 'id_tingkat_kelas');
     }
     use SoftDeletes;
 }

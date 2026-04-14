@@ -24,13 +24,13 @@ class SiswaForm
                     ->live()
                     ->required(),
 
-                Select::make('Tingkat Kelas')
-                ->relationship('kelas', 'tingkat_kelas')
-                ->options([
-                        '1' => 'X',
-                        '2' => 'XI',
-                        '3' => 'XII',
-                        ]),
+                Select::make('id_tingkat_kelas')
+                    ->label('Tingkat Kelas')
+                    ->relationship('kelas', 'tingkat_kelas')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->required(),
 
                 TextInput::make('nama_ayah')
                     ->label('Nama Ayah')

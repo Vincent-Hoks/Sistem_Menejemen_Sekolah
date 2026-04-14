@@ -17,7 +17,7 @@ class siswa extends Model
         'nipd',
         'nama_siswa',
         'id_jurusan',
-        'id_kelas',
+        'id_tingkat_kelas',
         'nama_ayah',
         'nama_ibu',
         'alamat',
@@ -31,7 +31,8 @@ class siswa extends Model
 
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class, 'id_kelas');
+        return $this->belongsTo(Kelas::class, 'id_tingkat_kelas');
     }
+
     use SoftDeletes;
 }
