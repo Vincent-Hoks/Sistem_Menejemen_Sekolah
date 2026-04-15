@@ -26,7 +26,7 @@ class MetodePembayaranResource extends Resource
 
     protected static string | UnitEnum | null $navigationGroup = 'Master Data';
 
-    protected static ?string $recordTitleAttribute = 'MetodePembayaran';
+    protected static ?string $recordTitleAttribute = 'metode_pembayaran';
 
     public static function form(Schema $schema): Schema
     {

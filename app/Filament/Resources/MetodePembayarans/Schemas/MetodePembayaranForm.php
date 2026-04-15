@@ -11,8 +11,9 @@ class MetodePembayaranForm
     {
         return $schema
             ->components([
-                //
-                TextInput::make('Metode Pembayaran'),
+                TextInput::make('metode_pembayaran')
+                    ->label('Metode Pembayaran')
+                    ->required(),
             ]);
     }
 }

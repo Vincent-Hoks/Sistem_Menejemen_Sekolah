@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MetodePembayaran extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'm_metode_pembayaran';
     protected $primaryKey = 'id_metode_pembayaran';
 
     protected $fillable = [
         'metode_pembayaran',
     ];
-        use SoftDeletes;
 }
