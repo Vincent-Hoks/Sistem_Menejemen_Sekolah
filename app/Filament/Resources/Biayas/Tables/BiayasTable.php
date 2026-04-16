@@ -20,6 +20,7 @@ class BiayasTable
                 TextColumn::make('nominal')
                     ->numeric()
                     ->sortable(),
+            
                 TextColumn::make('id_tingkat_kelas')
                     ->label('Untuk Kelas')
                     ->formatStateUsing(function ($state) {

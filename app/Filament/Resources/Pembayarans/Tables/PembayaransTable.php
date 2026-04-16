@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Pembayarans\Tables;
 
-use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -12,20 +15,30 @@ class PembayaransTable
     {
         return $table
             ->columns([
-                TextColumn::make('nipd'),
-                TextColumn::make('nama_siswa')->searchable(),
-                TextColumn::make('jurusan.jurusan'),
-                TextColumn::make('kelas.tingkat_kelas'),
+                TextColumn::make('nama_siswa')
+                    ->label('Nama Siswa')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('kelas.tingkat_kelas')
+                    ->label('Tingkat Kelas')
+                    ->sortable()
+                    ->default('-'),
+                TextColumn::make('jurusan.jurusan')
+                    ->label('Jurusan')
+                    ->sortable()
+                    ->default('-'),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                //
             ])
-            ->recordActions([
-                Action::make('customButton')
-                    ->label('Detail')
-                    ->icon('heroicon-o-star')
-                    ->action(function ($record) {
-                        dd($record);
-                    }),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }

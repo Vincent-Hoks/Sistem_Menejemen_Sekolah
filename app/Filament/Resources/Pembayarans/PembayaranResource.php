@@ -2,37 +2,43 @@
 
 namespace App\Filament\Resources\Pembayarans;
 
-use App\Filament\Resources\Pembayarans\Pages\CreatePembayaran;
-use App\Filament\Resources\Pembayarans\Pages\EditPembayaran;
+use App\Filament\Resources\Pembayarans\Pages\DetailPembayaran;
 use App\Filament\Resources\Pembayarans\Pages\ListPembayarans;
-use App\Filament\Resources\Pembayarans\Schemas\PembayaranForm;
 use App\Filament\Resources\Pembayarans\Tables\PembayaransTable;
 use App\Models\Siswa;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use BackedEnum;
+use UnitEnum;
 
 class PembayaranResource extends Resource
 {
     protected static ?string $model = Siswa::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $recordTitleAttribute = 'siswa';
+    protected static ?string $pluralLabel = 'Pembayaran';
 
-        protected static ?string $pluralLabel = 'Pembayaran';
+    protected static string | UnitEnum | null $navigationGroup = 'Transaksi';
 
+    protected static ?string $recordTitleAttribute = 'nama_siswa';
 
     public static function form(Schema $schema): Schema
     {
-        return PembayaranForm::configure($schema);
+        return $schema
+            ->schema([
+                // Form fields can be added here if needed
+            ]);
     }
 
     public static function table(Table $table): Table
     {
-        return PembayaransTable::configure($table);
+        return PembayaransTable::configure($table)
+            ->recordUrl(
+                fn (Siswa $record): string => static::getUrl('detail', ['record' => $record->id_siswa])
+            );
     }
 
     public static function getRelations(): array
@@ -46,8 +52,7 @@ class PembayaranResource extends Resource
     {
         return [
             'index' => ListPembayarans::route('/'),
-            'create' => CreatePembayaran::route('/create'),
-            'edit' => EditPembayaran::route('/{record}/edit'),
+            'detail' => DetailPembayaran::route('/{record}/detail'),
         ];
     }
 }

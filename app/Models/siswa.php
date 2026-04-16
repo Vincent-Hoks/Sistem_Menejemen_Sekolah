@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
-class siswa extends Model
+class Siswa extends Model
 {
     protected $table = 'm_siswa';
     protected $primaryKey = 'id_siswa';
+
+    public $incrementing = true; // kalau auto increment
+    protected $keyType = 'int'; // biasanya int
 
     protected $fillable = [
         'nipd',
