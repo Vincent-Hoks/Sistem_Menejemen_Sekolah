@@ -20,7 +20,16 @@ class BiayasTable
                 TextColumn::make('nominal')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('periode')
+                TextColumn::make('id_tingkat_kelas')
+                    ->label('Untuk Kelas')
+                    ->formatStateUsing(function ($state) {
+                        return match ($state) {
+                            1 => 'X',
+                            2 => 'XI',
+                            3 => 'XII',
+                            default => $state,
+                        };
+                    })
                     ->badge(),
                 TextColumn::make('created_at')
                     ->dateTime()

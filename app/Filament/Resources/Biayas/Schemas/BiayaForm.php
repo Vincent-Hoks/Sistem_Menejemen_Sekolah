@@ -17,9 +17,14 @@ class BiayaForm
                 TextInput::make('nominal')
                     ->required()
                     ->numeric(),
-                Select::make('periode')
-                    ->options(['bulanan' => 'Bulanan', 'tahunan' => 'Tahunan', 'sekali' => 'Sekali'])
-                    ->required(),
+                Select::make('id_tingkat_kelas')
+                    ->label('Untuk Kelas')
+                    ->options([
+                        1 => 'X',
+                        2 => 'XI',
+                        3 => 'XII',
+                    ])
+                    ->required()
             ]);
     }
 }

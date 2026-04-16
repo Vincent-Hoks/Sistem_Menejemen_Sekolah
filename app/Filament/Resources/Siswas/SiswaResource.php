@@ -28,6 +28,7 @@ class SiswaResource extends Resource
 
     protected static string | UnitEnum | null $navigationGroup = 'Master Data';
 
+    
     protected static ?string $recordTitleAttribute = 'Siswa';
 
     public static function form(Schema $schema): Schema

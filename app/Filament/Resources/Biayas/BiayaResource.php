@@ -22,6 +22,9 @@ class BiayaResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
+    protected static ?string $pluralLabel = 'Biaya';
+    
+
     protected static string | UnitEnum | null $navigationGroup = 'Master Data';
 
     protected static ?string $recordTitleAttribute = 'biaya';
