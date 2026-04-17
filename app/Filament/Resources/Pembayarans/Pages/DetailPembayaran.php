@@ -185,7 +185,7 @@ class DetailPembayaran extends Page
             return;
         }
 
-        TrxPembayaran::create([
+        $trx = TrxPembayaran::create([
             'id_biaya' => $data['id_biaya'],
             'id_siswa' => $this->siswa->id_siswa,
             'id_metode_pembayaran' => $data['id_metode_pembayaran'],
@@ -195,12 +195,12 @@ class DetailPembayaran extends Page
 
         Notification::make()
             ->title('Pembayaran Berhasil!')
-            ->body('Data pembayaran telah tersimpan.')
+            ->body('Data pembayaran telah tersimpan. Invoice sedang diunduh...')
             ->success()
             ->send();
 
-        // refresh halaman
-        $this->redirect(request()->header('Referer'));
+        // Redirect ke download invoice PDF
+        $this->redirect(route('invoice.pembayaran', ['idTrxPembayaran' => $trx->id_trx_pembayaran]));
     }
 
     //  TOMBOL PEMBAYARAN SPP
@@ -217,6 +217,11 @@ class DetailPembayaran extends Page
                     ->searchable()
                     ->preload()
                     ->live()
+                    ->required(),
+
+                Select::make('id_metode_pembayaran')
+                    ->label('Metode Pembayaran')
+                    ->options(MetodePembayaran::pluck('metode_pembayaran', 'id_metode_pembayaran'))
                     ->required(),
 
                 TextInput::make('nominal_bayar')
@@ -298,20 +303,21 @@ class DetailPembayaran extends Page
             return;
         }
 
-        TrxSPP::create([
+        $trx = TrxSPP::create([
             'id_spp' => $data['id_spp'],
             'id_siswa' => $this->siswa->id_siswa,
+            'id_metode_pembayaran' => $data['id_metode_pembayaran'],
             'nominal_bayar' => $data['nominal_bayar'],
         ]);
 
         Notification::make()
             ->title('Pembayaran SPP Berhasil!')
-            ->body('Data pembayaran SPP telah tersimpan.')
+            ->body('Data pembayaran SPP telah tersimpan. Invoice sedang diunduh...')
             ->success()
             ->send();
 
-        // refresh halaman
-        $this->redirect(request()->header('Referer'));
+        // Redirect ke download invoice PDF
+        $this->redirect(route('invoice.spp', ['idTrxSPP' => $trx->id_trx_spp]));
     }
 
     // HELPER: Hitung nominal terbayar SPP

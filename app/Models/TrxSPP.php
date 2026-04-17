@@ -8,11 +8,12 @@ class TrxSPP extends Model
 {
     protected $table = 'trx_spp';
     protected $primaryKey = 'id_trx_spp';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'id_siswa',
         'id_spp',
+        'id_metode_pembayaran',
         'nominal_bayar',
     ];
 
@@ -33,6 +34,16 @@ class TrxSPP extends Model
             \App\Models\SPP::class,
             'id_spp',
             'id_spp'
+        );
+    }
+
+    // RELASI KE METODE PEMBAYARAN
+    public function metode()
+    {
+        return $this->belongsTo(
+            \App\Models\MetodePembayaran::class,
+            'id_metode_pembayaran',
+            'id_metode_pembayaran'
         );
     }
 }
