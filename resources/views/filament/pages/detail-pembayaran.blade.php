@@ -14,4 +14,6 @@
         @livewire(\App\Filament\Widgets\DetailKelas12Widget::class, ['siswa' => $this->siswa])
     @endif
 
+    @livewire(\App\Filament\Widgets\DetailSPPWidget::class, ['siswa' => $this->siswa])
+
 </x-filament::page>

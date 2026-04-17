@@ -6,6 +6,8 @@ use App\Models\Biaya;
 use App\Models\Siswa;
 use App\Models\TrxPembayaran;
 use App\Models\MetodePembayaran;
+use App\Models\SPP;
+use App\Models\TrxSPP;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -47,6 +49,7 @@ class DetailPembayaran extends Page
         
         return [
             $this->createPembayaranAction(),
+            $this->createSPPAction(),
         ];
     }
 
@@ -198,7 +201,80 @@ class DetailPembayaran extends Page
         $this->redirect(request()->header('Referer'));
     }
 
-    // 🔥 SHOW DETAIL PEMBAYARAN BERDASARKAN KELAS
+    //  TOMBOL PEMBAYARAN SPP
+    protected function createSPPAction(): Action
+    {
+        return Action::make('pembayaran_spp')
+            ->label('Pembayaran SPP')
+            ->color('success')
+            ->icon('heroicon-o-plus')
+            ->form([
+                Select::make('id_spp')
+                    ->label('Keterangan SPP')
+                    ->options(fn () => $this->getSPPOptions())
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->required(),
+
+                TextInput::make('nominal_bayar')
+                    ->label('Nominal Bayar')
+                    ->numeric()
+                    ->required(),
+            ])
+            ->action(fn (array $data) => $this->saveSPP($data));
+    }
+
+    // LOGIC SPP SESUAI KELAS DAN JURUSAN
+    public function getSPPOptions()
+    {
+        $kelasIds = [];
+
+        if ($this->siswa->id_tingkat_kelas == 1) {
+            $kelasIds = [1];
+        } elseif ($this->siswa->id_tingkat_kelas == 2) {
+            $kelasIds = [1, 2];
+        } elseif ($this->siswa->id_tingkat_kelas == 3) {
+            $kelasIds = [1, 2, 3];
+        }
+
+        return SPP::whereIn('id_tingkat_kelas', $kelasIds)
+            ->where('id_jurusan', $this->siswa->id_jurusan)
+            ->get()
+            ->mapWithKeys(function (SPP $spp) {
+                $namaKelas = $this->getNamaKelas($spp->id_tingkat_kelas);
+                $namaJurusan = $spp->jurusan?->jurusan ?? '-';
+                $keterangan = "{$namaKelas}-{$namaJurusan}";
+                return [$spp->id_spp => $keterangan];
+            })
+            ->toArray();
+    }
+
+    // HELPER NAMA KELAS
+    private function getNamaKelas(int $idTingkatKelas): string
+    {
+        return match ($idTingkatKelas) {
+            1 => 'X',
+            2 => 'XI',
+            3 => 'XII',
+            default => '-'
+        };
+    }
+
+    // SAVE TRANSAKSI SPP
+    public function saveSPP(array $data): void
+    {
+        TrxSPP::create([
+            'id_spp' => $data['id_spp'],
+            'id_siswa' => $this->siswa->id_siswa,
+            'nominal_bayar' => $data['nominal_bayar'],
+        ]);
+
+        // refresh halaman
+        $this->redirect(request()->header('Referer'));
+    }
+
+    // SHOW DETAIL PEMBAYARAN BERDASARKAN KELAS
     public function shouldShowKelas10(): bool
     {
         // Tampil untuk kelas 10, 11, dan 12
