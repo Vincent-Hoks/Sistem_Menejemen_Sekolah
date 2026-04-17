@@ -32,9 +32,7 @@ class DetailKelas10Widget extends BaseWidget
         return $table
             ->query(
                 Biaya::query()
-                    ->whereHas('tingkatKelas', function ($query) {
-                        $query->where('tingkat_kelas', 'X');
-                    })
+                    ->where('id_tingkat_kelas', 1)
                     ->orderBy('jenis_biaya', 'ASC')
             )
             ->columns([
@@ -51,6 +49,36 @@ class DetailKelas10Widget extends BaseWidget
                     )
                     ->sortable()
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
+                TextColumn::make('nominal_terbayar')
+                    ->label('Nominal Terbayar')
+                    ->state(function (Biaya $record) {
+                        if (!$this->siswa) {
+                            return 0;
+                        }
+                        return $record->getNominalTerbayar($this->siswa->id_siswa);
+                    })
+                    ->numeric(
+                        decimalPlaces: 0,
+                        decimalSeparator: ',',
+                        thousandsSeparator: '.'
+                    )
+                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
+                TextColumn::make('Tunggakan')
+                    ->label('Tunggakan')
+                    ->state(function (Biaya $record) {
+                        if (!$this->siswa) {
+                            return 0;
+                        }
+                        $nominalTerbayar = $record->getNominalTerbayar($this->siswa->id_siswa);
+                        $tunggakan = $record->nominal - $nominalTerbayar;
+                        return max($tunggakan, 0);
+                    })
+                    ->numeric(
+                        decimalPlaces: 0,
+                        decimalSeparator: ',',
+                        thousandsSeparator: '.'
+                    )
+                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
             ])
             ->paginated(false)
             ->striped();

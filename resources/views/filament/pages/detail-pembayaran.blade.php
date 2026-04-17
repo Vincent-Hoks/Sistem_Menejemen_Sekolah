@@ -19,8 +19,8 @@
         </p>
     </div>
 
-    @livewire(\App\Filament\Widgets\DetailKelas10Widget::class)
-    @livewire(\App\Filament\Widgets\DetailKelas11Widget::class)
-    @livewire(\App\Filament\Widgets\DetailKelas12Widget::class)
+    @livewire(\App\Filament\Widgets\DetailKelas10Widget::class, ['siswa' => $this->siswa])
+    @livewire(\App\Filament\Widgets\DetailKelas11Widget::class, ['siswa' => $this->siswa])
+    @livewire(\App\Filament\Widgets\DetailKelas12Widget::class, ['siswa' => $this->siswa])
 
 </x-filament::page>
