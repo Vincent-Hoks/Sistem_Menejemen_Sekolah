@@ -9,9 +9,14 @@ class Jurusan extends Model
 {
     protected $table = 'm_jurusan';
     protected $primaryKey = 'id_jurusan';
+    
+    // Pastikan primary key auto increment
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'jurusan',
+        'spp_pokok_jurusan',
     ];
 
     public function siswa()

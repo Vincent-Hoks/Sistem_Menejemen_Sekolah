@@ -21,6 +21,15 @@ class JurusansTable
                 TextColumn::make('jurusan')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('spp_pokok_jurusan')
+                    ->label('SPP Pokok Jurusan')
+                    ->numeric(
+                        decimalPlaces: 0,
+                        decimalSeparator: ',',
+                        thousandsSeparator: '.'
+                    )
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.')),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
