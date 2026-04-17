@@ -12,6 +12,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Placeholder;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 
 use Illuminate\Support\Carbon;
@@ -61,15 +62,12 @@ class DetailPembayaran extends Page
                     ->label('Jenis Biaya')
                     ->options(fn () => $this->getBiayaOptions())
                     ->searchable()
-                    ->preload()
                     ->live()
                     ->required(),
 
                 Select::make('id_metode_pembayaran')
                     ->label('Metode Pembayaran')
-                    ->options(
-                        MetodePembayaran::pluck('metode_pembayaran', 'id_metode_pembayaran')
-                    )
+                    ->options(MetodePembayaran::pluck('metode_pembayaran', 'id_metode_pembayaran'))
                     ->required(),
 
                 TextInput::make('nominal_bayar')
@@ -84,7 +82,7 @@ class DetailPembayaran extends Page
             ->action(fn (array $data) => $this->savePembayaran($data));
     }
 
-    // 🔥 LOGIC BIAYA SESUAI KELAS
+    // 🔥 LOGIC BIAYA SESUAI KELAS (EXCLUDE BIAYA YANG LUNAS)
     public function getBiayaOptions()
     {
         $kelasIds = [];
@@ -97,10 +95,28 @@ class DetailPembayaran extends Page
             $kelasIds = [1, 2, 3];
         }
 
-        return Biaya::whereIn('id_tingkat_kelas', $kelasIds)
+        $biayaList = Biaya::whereIn('id_tingkat_kelas', $kelasIds)
             ->orderBy('jenis_biaya', 'ASC')
-            ->pluck('jenis_biaya', 'id_biaya')
-            ->toArray();
+            ->get();
+
+        $options = [];
+
+        foreach ($biayaList as $biaya) {
+            // Hitung nominalTerbayar untuk biaya ini
+            $nominalTerbayar = TrxPembayaran::where('id_siswa', $this->siswa->id_siswa)
+                ->where('id_biaya', $biaya->id_biaya)
+                ->sum('nominal');
+
+            // Hitung tunggakan
+            $tunggakan = max($biaya->nominal - $nominalTerbayar, 0);
+
+            // Hanya include biaya yang belum lunas (tunggakan > 0)
+            if ($tunggakan > 0) {
+                $options[$biaya->id_biaya] = $biaya->jenis_biaya;
+            }
+        }
+
+        return $options;
     }
 
     // 🔥 HITUNG TUNGGAKAN
@@ -127,9 +143,43 @@ class DetailPembayaran extends Page
             : 'Rp ' . number_format($tunggakan, 0, ',', '.');
     }
 
+    // 🔥 HITUNG TUNGGAKAN (RETURN NUMERIC VALUE)
+    public function calculateTunggakanValue($idBiaya)
+    {
+        if (!$idBiaya) {
+            return 0;
+        }
+
+        $biaya = Biaya::find($idBiaya);
+
+        if (!$biaya) {
+            return 0;
+        }
+
+        $nominalTerbayar = TrxPembayaran::where('id_siswa', $this->siswa->id_siswa)
+            ->where('id_biaya', $idBiaya)
+            ->sum('nominal');
+
+        $tunggakan = max($biaya->nominal - $nominalTerbayar, 0);
+
+        return (float) $tunggakan;
+    }
+
     // 🔥 SAVE KE DATABASE (INI YANG PENTING)
     public function savePembayaran(array $data): void
     {
+        // Validasi nominal tidak melebihi tunggakan
+        $tunggakan = $this->calculateTunggakanValue($data['id_biaya']);
+        
+        if ($data['nominal_bayar'] > $tunggakan) {
+            Notification::make()
+                ->title('Validasi Gagal!')
+                ->body('Nominal pembayaran tidak boleh melebihi tunggakan. Tunggakan: Rp ' . number_format($tunggakan, 0, ',', '.'))
+                ->danger()
+                ->send();
+            return;
+        }
+
         TrxPembayaran::create([
             'id_biaya' => $data['id_biaya'],
             'id_siswa' => $this->siswa->id_siswa,
@@ -137,6 +187,12 @@ class DetailPembayaran extends Page
             'nominal' => $data['nominal_bayar'],
             'tanggal_bayar' => Carbon::now()->format('Y-m-d'),
         ]);
+
+        Notification::make()
+            ->title('Pembayaran Berhasil!')
+            ->body('Data pembayaran telah tersimpan.')
+            ->success()
+            ->send();
 
         // refresh halaman
         $this->redirect(request()->header('Referer'));
