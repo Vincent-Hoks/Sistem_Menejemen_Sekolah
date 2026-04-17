@@ -13,10 +13,18 @@ class BiayaForm
         return $schema
             ->components([
                 TextInput::make('jenis_biaya')
-                    ->required(),
+                    ->required()
+                    ->label('Jenis Biaya')
+                    ->maxLength(100)
+                    ->rules(['regex:/^[a-zA-Z\s]+$/']),
+
                 TextInput::make('nominal')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(0)
+                    ->label('Nominal')
+                    ->rules(['integer', 'min:0']),
+                    
                 Select::make('id_tingkat_kelas')
                     ->label('Untuk Kelas')
                     ->options([

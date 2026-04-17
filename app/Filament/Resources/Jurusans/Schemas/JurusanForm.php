@@ -13,7 +13,10 @@ class JurusanForm
             ->components([
                 TextInput::make('jurusan')
                     ->label('Jurusan')
-                    ->required(),
+                    ->required()
+                    ->maxLength(100)
+                    ->rules(['regex:/^[a-zA-Z\s]+$/']),
+                    
                 TextInput::make('spp_pokok_jurusan')
                     ->label('SPP Pokok Jurusan')
                     ->numeric()

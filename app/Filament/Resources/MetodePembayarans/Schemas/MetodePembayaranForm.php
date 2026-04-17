@@ -13,7 +13,9 @@ class MetodePembayaranForm
             ->components([
                 TextInput::make('metode_pembayaran')
                     ->label('Metode Pembayaran')
-                    ->required(),
+                    ->required()
+                    ->maxLength(100)
+                    ->rules(['regex:/^[a-zA-Z\s]+$/']),
             ]);
     }
 }
