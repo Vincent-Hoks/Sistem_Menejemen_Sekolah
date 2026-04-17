@@ -82,7 +82,9 @@ class DetailPembayaran extends Page
                     ->label('Tunggakan')
                     ->content(fn ($get) => $this->calculateTunggakan($get('id_biaya'))),
             ])
-            ->action(fn (array $data) => $this->savePembayaran($data));
+            ->action(fn (array $data) => $this->savePembayaran($data))
+            ->modalSubmitActionLabel('Tambah')
+            ->modalCancelActionLabel('Batalkan');
     }
 
     // 🔥 LOGIC BIAYA SESUAI KELAS (EXCLUDE BIAYA YANG LUNAS)
@@ -206,7 +208,7 @@ class DetailPembayaran extends Page
     {
         return Action::make('pembayaran_spp')
             ->label('Pembayaran SPP')
-            ->color('success')
+            ->color('warning')
             ->icon('heroicon-o-plus')
             ->form([
                 Select::make('id_spp')
@@ -222,7 +224,9 @@ class DetailPembayaran extends Page
                     ->numeric()
                     ->required(),
             ])
-            ->action(fn (array $data) => $this->saveSPP($data));
+            ->action(fn (array $data) => $this->saveSPP($data))
+            ->modalSubmitActionLabel('Tambah')
+            ->modalCancelActionLabel('Batalkan');
     }
 
     // LOGIC SPP SESUAI KELAS DAN JURUSAN
@@ -264,14 +268,58 @@ class DetailPembayaran extends Page
     // SAVE TRANSAKSI SPP
     public function saveSPP(array $data): void
     {
+        // Validasi jika sudah lunas bulan ke 12
+        $spp = SPP::find($data['id_spp']);
+        if (!$spp) {
+            Notification::make()
+                ->title('Validasi Gagal!')
+                ->body('SPP tidak ditemukan.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // Hitung nominal terbayar saat ini
+        $nominalTerbayarSaat = $this->getNominalTerbayarSPP($data['id_spp']);
+        
+        // Hitung nominal terbayar setelah transaksi baru
+        $nominalTerbayarSetelah = $nominalTerbayarSaat + $data['nominal_bayar'];
+        
+        // Hitung bulan ke setelah transaksi
+        $bulanKeSetelah = (int) floor($nominalTerbayarSetelah / $spp->spp);
+
+        // Jika melebihi bulan ke 12, berikan warning
+        if ($bulanKeSetelah > 12) {
+            Notification::make()
+                ->title('Peringatan!')
+                ->body("Pembayaran ini akan melebihi bulan ke 12. Total akan menjadi bulan ke {$bulanKeSetelah}. Pastikan nominal benar sebelum melanjutkan.")
+                ->warning()
+                ->send();
+            return;
+        }
+
         TrxSPP::create([
             'id_spp' => $data['id_spp'],
             'id_siswa' => $this->siswa->id_siswa,
             'nominal_bayar' => $data['nominal_bayar'],
         ]);
 
+        Notification::make()
+            ->title('Pembayaran SPP Berhasil!')
+            ->body('Data pembayaran SPP telah tersimpan.')
+            ->success()
+            ->send();
+
         // refresh halaman
         $this->redirect(request()->header('Referer'));
+    }
+
+    // HELPER: Hitung nominal terbayar SPP
+    private function getNominalTerbayarSPP(int $idSPP): int
+    {
+        return TrxSPP::where('id_siswa', $this->siswa->id_siswa)
+            ->where('id_spp', $idSPP)
+            ->sum('nominal_bayar');
     }
 
     // SHOW DETAIL PEMBAYARAN BERDASARKAN KELAS
