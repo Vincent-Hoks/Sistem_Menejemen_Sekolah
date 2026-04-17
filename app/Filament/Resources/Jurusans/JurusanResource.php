@@ -27,7 +27,7 @@ class JurusanResource extends Resource
     protected static string | UnitEnum | null $navigationGroup = 'Master Data';
 
     protected static ?string $recordTitleAttribute = 'Jurusan';
-        protected static ?string $pluralLabel = 'Jurusan';
+        protected static ?string $pluralLabel = 'Daftar Jurusan';
 
 
     public static function form(Schema $schema): Schema

@@ -27,8 +27,10 @@ class SiswasTable
             ->filters([
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->label('Ubah'),
+                DeleteAction::make()
+                    ->label('Hapus'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

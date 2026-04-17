@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Siswas\Pages;
 
 use App\Filament\Resources\Siswas\SiswaResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -17,10 +18,23 @@ class EditSiswa extends EditRecord
         return $this->getResource()::getUrl('index');
     }
 
+    protected function getSaveFormAction(): Action
+    {
+        return parent::getSaveFormAction()
+            ->label('Simpan Perubahan');
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Batalkan');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->label('Hapus'),
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];

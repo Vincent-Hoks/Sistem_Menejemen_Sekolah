@@ -26,6 +26,8 @@ class SiswaResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
+    protected static ?string $pluralLabel = 'Daftar Siswa';
+
     protected static string | UnitEnum | null $navigationGroup = 'Master Data';
 
     

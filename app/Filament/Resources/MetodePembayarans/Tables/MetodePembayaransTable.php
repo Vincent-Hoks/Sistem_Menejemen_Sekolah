@@ -26,14 +26,15 @@ class MetodePembayaransTable
                 //
             ])
             ->filters([
-                TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->label('Ubah'),
+                DeleteAction::make()
+                    ->label('Hapus'),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
+                    BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
