@@ -3,15 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
-class Pembayaran extends Model
+class TrxPembayaran extends Model
 {
     protected $table = 'trx_pembayaran';
     protected $primaryKey = 'id_trx_pembayaran';
 
     protected $fillable = [
-        'id_biaya', // ✅ FIX (WAJIB)
+        'id_biaya',
         'id_siswa',
         'id_metode_pembayaran',
         'nominal',
@@ -38,14 +37,13 @@ class Pembayaran extends Model
         );
     }
 
-    /**
-     * 🔥 HITUNG TOTAL SUDAH DIBAYAR
-     */
-    public function getNominalTerbayar($idSiswa)
+    // RELASI KE METODE PEMBAYARAN
+    public function metode()
     {
-        return DB::table('trx_pembayaran')
-            ->where('id_siswa', $idSiswa)
-            ->where('id_biaya', $this->id_biaya)
-            ->sum('nominal');
+        return $this->belongsTo(
+            \App\Models\MetodePembayaran::class,
+            'id_metode_pembayaran',
+            'id_metode_pembayaran'
+        );
     }
 }

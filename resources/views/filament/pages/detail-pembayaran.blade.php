@@ -1,26 +1,17 @@
 <x-filament::page>
 
-    <div class="mb-6">
-        <h2 class="text-xl font-bold">
-            {{ $this->siswa->nama_siswa }}
-        </h2>
+    @livewire(\App\Filament\Widgets\DetailSiswaWidget::class, ['siswa' => $this->siswa])
 
-        <p>
-            Kelas: {{ match($this->siswa->id_tingkat_kelas) {
-                1 => 'X',
-                2 => 'XI',
-                3 => 'XII',
-                default => '-'
-            } }}
-        </p>
+    @if($this->shouldShowKelas10())
+        @livewire(\App\Filament\Widgets\DetailKelas10Widget::class, ['siswa' => $this->siswa])
+    @endif
 
-        <p>
-            Jurusan: {{ $this->siswa->jurusan->jurusan ?? '-' }}
-        </p>
-    </div>
+    @if($this->shouldShowKelas11())
+        @livewire(\App\Filament\Widgets\DetailKelas11Widget::class, ['siswa' => $this->siswa])
+    @endif
 
-    @livewire(\App\Filament\Widgets\DetailKelas10Widget::class, ['siswa' => $this->siswa])
-    @livewire(\App\Filament\Widgets\DetailKelas11Widget::class, ['siswa' => $this->siswa])
-    @livewire(\App\Filament\Widgets\DetailKelas12Widget::class, ['siswa' => $this->siswa])
+    @if($this->shouldShowKelas12())
+        @livewire(\App\Filament\Widgets\DetailKelas12Widget::class, ['siswa' => $this->siswa])
+    @endif
 
 </x-filament::page>

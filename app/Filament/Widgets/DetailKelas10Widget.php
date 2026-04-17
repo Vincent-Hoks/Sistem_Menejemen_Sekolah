@@ -78,7 +78,7 @@ class DetailKelas10Widget extends BaseWidget
                         decimalSeparator: ',',
                         thousandsSeparator: '.'
                     )
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
+                    ->formatStateUsing(fn ($state) => $state == 0 ? 'Lunas' : 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
             ])
             ->paginated(false)
             ->striped();

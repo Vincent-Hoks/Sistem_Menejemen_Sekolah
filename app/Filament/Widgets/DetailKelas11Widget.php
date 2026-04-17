@@ -64,7 +64,7 @@ class DetailKelas11Widget extends BaseWidget
                     )
                     ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
 
-                                    TextColumn::make('Tunggakan')
+                TextColumn::make('Tunggakan')
                     ->label('Tunggakan')
                     ->state(function (Biaya $record) {
                         if (!$this->siswa) {
@@ -79,7 +79,7 @@ class DetailKelas11Widget extends BaseWidget
                         decimalSeparator: ',',
                         thousandsSeparator: '.'
                     )
-                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
+                    ->formatStateUsing(fn ($state) => $state == 0 ? 'Lunas' : 'Rp ' . number_format($state ?? 0, 0, ',', '.')),
             ])
             ->paginated(false)
             ->striped();
