@@ -1,14 +1,16 @@
 <?php
 
 namespace App\Models;
-// use App\Models\Siswa;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Pembayaran extends Model
 {
-    //
     protected $table = 'trx_pembayaran';
     protected $primaryKey = 'id_trx_pembayaran';
+
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'id_tagihan',
@@ -18,12 +20,12 @@ class Pembayaran extends Model
         'tanggal_bayar',
     ];
 
-public function siswa()
-{
-    return $this->belongsTo(
-        \App\Models\Siswa::class,
-        'id_siswa',     // FK di pembayarans
-        'id_siswa'      // PK di m_siswa
-    );
-}
+    public function siswa()
+    {
+        return $this->belongsTo(
+            \App\Models\Siswa::class,
+            'id_siswa',
+            'id_siswa'
+        );
+    }
 }
