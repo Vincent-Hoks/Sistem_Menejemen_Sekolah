@@ -87,7 +87,7 @@ class DetailPembayaran extends Page
             ->modalCancelActionLabel('Batalkan');
     }
 
-    // 🔥 LOGIC BIAYA SESUAI KELAS (EXCLUDE BIAYA YANG LUNAS)
+    // LOGIC BIAYA SESUAI KELAS (EXCLUDE BIAYA YANG LUNAS)
     public function getBiayaOptions()
     {
         $kelasIds = [];
