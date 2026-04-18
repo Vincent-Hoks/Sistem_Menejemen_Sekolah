@@ -7,7 +7,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
-class RiwayatPembayaranSPPWidget extends BaseWidget
+class RiwayatSPPWidget extends BaseWidget
 {
     protected static ?string $heading = 'Riwayat Pembayaran SPP';
     protected int | string | array $columnSpan = 'full';
@@ -18,7 +18,6 @@ class RiwayatPembayaranSPPWidget extends BaseWidget
             ->query(
                 TrxSPP::query()
                     ->selectRaw('
-                        trx_spp.id_trx_spp,
                         m_siswa.nama_siswa,
                         m_spp.keterangan_spp,
                         m_metode_pembayaran.metode_pembayaran,
@@ -28,12 +27,12 @@ class RiwayatPembayaranSPPWidget extends BaseWidget
                     ->join('m_metode_pembayaran', 'm_metode_pembayaran.id_metode_pembayaran', '=', 'trx_spp.id_metode_pembayaran')
                     ->join('m_spp', 'm_spp.id_spp', '=', 'trx_spp.id_spp')
                     ->latest('trx_spp.created_at')
+                    ->limit(2)
             )
             ->columns([
                 Tables\Columns\TextColumn::make('nama_siswa')
                     ->label('Nama Siswa')
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('keterangan_spp')
                     ->label('Keterangan SPP')
                     ->sortable(),
@@ -45,7 +44,6 @@ class RiwayatPembayaranSPPWidget extends BaseWidget
                     ->dateTime('d-m-Y H:i')
                     ->sortable(),
             ])
-            ->paginated(true)
-            ->paginationPageOptions([10, 25, 50]);
+            ->paginated(false);
     }
 }
